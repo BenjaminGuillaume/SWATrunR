@@ -351,12 +351,15 @@ load_swat_run <- function(save_dir, variable = NULL, run = NULL,
   }
 
   run_sim <- sort(unique(save_list$sim_tbl$run_idx))
-  run_all <- 1:nrow(save_list$par_val)
+  if (!is.null(save_list$par_val)) {
+    run_all <- seq_len(nrow(save_list$par_val))
+  }
 
   if(is.null(run)) {
     run <- sort(unique(save_list$sim_tbl$run_idx))
-  } else if (any(!(run %in% run_all))) {
-    no_run <- run[which(!(run %in% run_all))]
+  } else if (!is.null(save_list$par_val) &&
+             any(!(run %in% run_all))) {
+    no_run <- run[!(run %in% run_all)]
     stop("The following runs are not defined for this simulation project:\n  ",
          group_values(no_run))
   } else if (any(!(run %in% run_sim))) {
